@@ -2,7 +2,16 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { Crown, Zap, Download, Clock, CheckCircle, XCircle, ArrowLeft, Star } from 'lucide-react'
+import {
+  Crown,
+  Zap,
+  Download,
+  Clock,
+  CheckCircle,
+  XCircle,
+  ArrowLeft,
+  Star
+} from 'lucide-react'
 import Link from 'next/link'
 
 export default function UpgradePage() {
@@ -15,7 +24,11 @@ export default function UpgradePage() {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
-        const { data } = await supabase.from('profiles').select('is_pro, has_used_trial').eq('id', user.id).single()
+        const { data } = await supabase
+          .from('profiles')
+          .select('is_pro, has_used_trial')
+          .eq('id', user.id)
+          .single()
         setProfile(data)
       }
     }
@@ -63,33 +76,32 @@ export default function UpgradePage() {
   ]
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'var(--paper)', 
-      display: 'flex', 
-      flexDirection: 'column' 
-    }}>
-      <nav style={{ 
-        background: 'white', 
-        borderBottom: '1px solid var(--paper-3)', 
-        padding: '0 32px', 
-        height: 56, 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between' 
+    <div style={{ minHeight: '100vh', background: 'var(--paper)', display: 'flex', flexDirection: 'column' }}>
+      <nav style={{
+        background: 'white',
+        borderBottom: '1px solid var(--paper-3)',
+        padding: '0 32px',
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
       }}>
-        <Link href="/dashboard" style={{ textDecoration: 'none', color: 'var(--ink)', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-          <ArrowLeft size={16} /> Back to dashboard
+        <Link href="/dashboard" style={{
+          textDecoration: 'none',
+          color: 'var(--ink)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          fontSize: 13
+        }}>
+          <ArrowLeft size={16} />
+          Back to dashboard
         </Link>
         <span className="serif" style={{ fontSize: 20 }}>Resumatch</span>
         <div style={{ width: 100 }} />
       </nav>
 
-      <div style={{ 
-        maxWidth: 1100, 
-        margin: '0 auto', 
-        padding: '48px 24px' 
-      }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: '48px' }}>
           <h1 className="serif" style={{ fontSize: 48, marginBottom: 16, letterSpacing: '-1px' }}>
             Get hired faster with Resumatch Pro
@@ -99,22 +111,14 @@ export default function UpgradePage() {
           </p>
         </div>
 
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-          gap: 24, 
-          marginBottom: 48 
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: 24,
+          marginBottom: 48
         }}>
-          {/* Free Plan */}
-          <div className="card" style={{ 
-            padding: 32, 
-            textAlign: 'center' 
-          }}>
-            <div className="badge badge-free" style={{ 
-              display: 'inline-flex', 
-              marginBottom: 24, 
-              fontSize: 16 
-            }}>
+          <div className="card" style={{ padding: 32, textAlign: 'center' }}>
+            <div className="badge badge-free" style={{ display: 'inline-flex', marginBottom: 24, fontSize: 16 }}>
               Free
             </div>
             <div style={{ marginBottom: 24 }}>
@@ -123,20 +127,25 @@ export default function UpgradePage() {
             </div>
             <div style={{ textAlign: 'left', marginBottom: 32 }}>
               {features.map((f, i) => (
-                <div key={i} style={{ 
-                  display: 'flex', 
-                  gap: 12, 
-                alignItems: 'center', 
-                padding: '8px 0', 
-                fontSize: 14,
-                borderBottom: i < features.length -1 ? '1px solid var(--paper-2)' : 'none' 
-              }}>
-                {f.free ? 
-                  <CheckCircle size={16} style={{ color: 'var(--success)' }} /> 
-                  : <XCircle size={16} style={{ color: 'var(--ink-muted)' }} />}
-                <span style={{ color: f.free ? 'var(--ink)' : 'var(--ink-muted)' }}>{f.name}</span>
-              </div>
-            ))}
+                <div key={i} style={{
+                  display: 'flex',
+                  gap: 12,
+                  alignItems: 'center',
+                  padding: '8px 0',
+                  fontSize: 14,
+                  borderBottom: i < features.length - 1 ? '1px solid var(--paper-2)' : 'none'
+                }}>
+                  {f.free ? (
+                    <CheckCircle size={16} style={{ color: 'var(--success)' }} />
+                  ) : (
+                    <XCircle size={16} style={{ color: 'var(--ink-muted)' }} />
+                  )}
+                  <span style={{ color: f.free ? 'var(--ink)' : 'var(--ink-muted)' }}>
+                    {f.name}
+                  </span>
+                </div>
+              ))}
+            </div>
             <Link href="/dashboard" style={{ textDecoration: 'none' }}>
               <button className="btn-outline" style={{ width: '100%', justifyContent: 'center' }}>
                 Continue with Free
@@ -144,28 +153,24 @@ export default function UpgradePage() {
             </Link>
           </div>
 
-          {/* Pro Plan */}
-          <div className="card" style={{ 
-            padding: 32, 
-            textAlign: 'center', 
-            border: '3px solid var(--accent)', 
-            boxShadow: '0 10px 40px -15px rgba(212, 98, 42, 0.2)', 
-            position: 'relative' 
+          <div className="card" style={{
+            padding: 32,
+            textAlign: 'center',
+            border: '3px solid var(--accent)',
+            boxShadow: '0 10px 40px -15px rgba(212, 98, 42, 0.2)',
+            position: 'relative'
           }}>
-            <div style={{ 
-              position: 'absolute', 
-              top: -14, 
-              left: '50%', 
-              transform: 'translateX(-50%)' 
+            <div style={{
+              position: 'absolute',
+              top: -14,
+              left: '50%',
+              transform: 'translateX(-50%)'
             }}>
               <span className="badge badge-pro">Most Popular</span>
             </div>
-            <div className="badge badge-pro" style={{ 
-              display: 'inline-flex', 
-              marginBottom: 24, 
-              fontSize: 16 
-            }}>
-              <Crown size={16} /> Pro
+            <div className="badge badge-pro" style={{ display: 'inline-flex', marginBottom: 24, fontSize: 16 }}>
+              <Crown size={16} />
+              Pro
             </div>
             <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 48, fontWeight: 300, marginBottom: 4 }}>$15</div>
@@ -173,13 +178,13 @@ export default function UpgradePage() {
             </div>
             <div style={{ textAlign: 'left', marginBottom: 32 }}>
               {features.map((f, i) => (
-                <div key={i} style={{ 
-                  display: 'flex', 
-                  gap: 12, 
-                  alignItems: 'center', 
-                  padding: '8px 0', 
+                <div key={i} style={{
+                  display: 'flex',
+                  gap: 12,
+                  alignItems: 'center',
+                  padding: '8px 0',
                   fontSize: 14,
-                  borderBottom: i < features.length -1 ? '1px solid var(--paper-2)' : 'none' 
+                  borderBottom: i < features.length - 1 ? '1px solid var(--paper-2)' : 'none'
                 }}>
                   <CheckCircle size={16} style={{ color: 'var(--success)' }} />
                   <span style={{ color: 'var(--ink)' }}>{f.name}</span>
@@ -188,38 +193,52 @@ export default function UpgradePage() {
             </div>
 
             {!profile?.is_pro && !profile?.has_used_trial ? (
-              <button 
-                className="btn-accent" 
-                onClick={handleStartTrial} 
-                disabled={loading} 
-                style={{ 
-                  width: '100%', 
-                  justifyContent: 'center', 
-                  fontSize:16, 
-                  padding: '14px 28px' 
+              <button
+                className="btn-accent"
+                onClick={handleStartTrial}
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  fontSize: 16,
+                  padding: '14px 28px'
                 }}
               >
-                {loading ? <><span className="spinner" /> Starting Trial...</> : 'Start 14-day Free Trial'}
+                {loading ? (
+                  <>
+                    <span className="spinner" />
+                    Starting Trial...
+                  </>
+                ) : (
+                  'Start 14-day Free Trial'
+                )}
               </button>
             ) : (
-              <button 
-                className="btn-accent" 
-                onClick={handleUpgrade} 
-                disabled={loading} 
-                style={{ 
-                  width: '100%', 
-                  justifyContent: 'center', 
-                  fontSize:16, 
-                  padding: '14px 28px' 
+              <button
+                className="btn-accent"
+                onClick={handleUpgrade}
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  fontSize: 16,
+                  padding: '14px 28px'
                 }}
               >
-                {loading ? <><span className="spinner" /> Redirecting...</> : 'Upgrade to Pro'}
+                {loading ? (
+                  <>
+                    <span className="spinner" />
+                    Redirecting...
+                  </>
+                ) : (
+                  'Upgrade to Pro'
+                )}
               </button>
             )}
-            <p style={{ 
-              fontSize: 12, 
-              color: 'var(--ink-muted)', 
-              marginTop: 12 
+            <p style={{
+              fontSize: 12,
+              color: 'var(--ink-muted)',
+              marginTop: 12
             }}>
               Powered by Stripe. Cancel anytime.
             </p>
@@ -227,17 +246,13 @@ export default function UpgradePage() {
         </div>
 
         <div style={{ marginBottom: 48 }}>
-          <h2 className="serif" style={{ 
-            fontSize: 28, 
-            textAlign: 'center', 
-            marginBottom: 32 
-          }}>
+          <h2 className="serif" style={{ fontSize: 28, textAlign: 'center', marginBottom: 32 }}>
             What our users say
           </h2>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-            gap: 24 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 24
           }}>
             {testimonials.map((t, i) => (
               <div key={i} className="card" style={{ padding: 24 }}>
@@ -246,26 +261,26 @@ export default function UpgradePage() {
                     <Star key={j} size={16} fill="#f59e0b" color="#f59e0b" />
                   ))}
                 </div>
-                <p style={{ fontSize:14, color: 'var(--ink-muted)', marginBottom: 16 }}>
+                <p style={{ fontSize: 14, color: 'var(--ink-muted)', marginBottom: 16 }}>
                   "{t.text}"
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ 
-                    width: 40, 
-                    height: 40, 
-                    borderRadius: '50%', 
-                    background: 'var(--accent)', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    color: 'white', 
-                    fontWeight: 600 
+                  <div style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: '50%',
+                    background: 'var(--accent)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontWeight: 600
                   }}>
                     {t.name.charAt(0)}
                   </div>
                   <div>
-                    <div style={{ fontSize:14, fontWeight:500 }}>{t.name}</div>
-                    <div style={{ fontSize:12, color: 'var(--ink-muted)' }}>{t.role}</div>
+                    <div style={{ fontSize: 14, fontWeight: 500 }}>{t.name}</div>
+                    <div style={{ fontSize: 12, color: 'var(--ink-muted)' }}>{t.role}</div>
                   </div>
                 </div>
               </div>
@@ -274,5 +289,5 @@ export default function UpgradePage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -2,14 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { 
-  Upload, 
-  FileText, 
-  Clipboard, 
-  ArrowLeft, 
-  Linkedin,
-  CheckCircle
-} from 'lucide-react'
+import { Upload, FileText, Clipboard, ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import type { LinkedInOptimizationResult } from '@/lib/tailor'
 
@@ -36,16 +29,6 @@ export default function LinkedInPage() {
     load()
   }, [])
 
-  async function extractTextFromPDF(file: File) {
-    const arrayBuffer = await file.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
-    // For simplicity, we'll use a heuristic here - in real life you'd use pdf-parse
-    // But since we can't easily use pdf-parse client-side, we'll send it to an API
-    // Or we can use the existing /api/tailor route to extract?
-    // For now, let's assume we have a way to get text (we'll handle this differently)
-    return "" 
-  }
-
   async function handleOptimize() {
     if (!file && !result) { // Need either file or existing text
       setError('Please upload your resume PDF')
@@ -58,17 +41,11 @@ export default function LinkedInPage() {
 
     try {
       const formData = new FormData()
-      if (file) {
-        formData.append('resume', file)
-      }
-      formData.append('jobDescription', jobDesc)
+      if (file) formData.append('resume', file)
 
-      // First, extract text from PDF using our tailor route (or create a separate extract route)
-      // Wait - actually, let's just use the same method as the main page
-      // First, get the text
+      // First, extract text using our existing extract endpoint
       let resumeText = ""
       if (file) {
-        // Use our existing API to extract
         const extractRes = await fetch('/api/extract-text', {
           method: 'POST',
           body: formData
@@ -80,19 +57,15 @@ export default function LinkedInPage() {
           setLoading(false)
           return
         }
-
         const extractData = await extractRes.json()
         resumeText = extractData.text
       }
 
-      // Then optimize
+      // Then call LinkedIn optimization
       const res = await fetch('/api/linkedin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          resumeText: resumeText,
-          jobDescription: jobDesc
-        })
+        body: JSON.stringify({ resumeText, jobDescription: jobDesc })
       })
 
       if (!res.ok) {
@@ -104,7 +77,7 @@ export default function LinkedInPage() {
 
       const data = await res.json()
       setResult(data)
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)
@@ -119,21 +92,22 @@ export default function LinkedInPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--paper)' }}>
-      <nav style={{ 
-        background: 'white', 
-        borderBottom: '1px solid var(--paper-3)', 
-        padding: '0 32px', 
-        height: 56, 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between' 
+      <nav style={{
+        background: 'white',
+        borderBottom: '1px solid var(--paper-3)',
+        padding: '0 32px',
+        height: 56,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Link href="/dashboard" style={{ textDecoration: 'none', color: 'var(--ink-muted)', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <ArrowLeft size={16} /> Back to dashboard
+          <Link href="/dashboard" style={{ textDecoration: 'none', fontSize: 13, color: 'var(--ink-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <ArrowLeft size={16} />
+            Back to dashboard
           </Link>
           <span className="serif" style={{ fontSize: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Linkedin size={20} style={{ color: '#0A66C2' }} /> LinkedIn Optimizer
+            LinkedIn Optimizer
           </span>
         </div>
       </nav>
@@ -147,13 +121,19 @@ export default function LinkedInPage() {
             </p>
 
             <div style={{ marginBottom: 20 }}>
-              <label style={{ fontSize: 13, fontWeight: 500, display: 'block', marginBottom: 8 }}>Your resume (PDF)</label>
+              <label style={{ fontSize: 13, fontWeight: 500, display: 'block', marginBottom: 8 }}>
+                Your resume (PDF)
+              </label>
               <div
                 className={`upload-zone ${drag ? 'drag-over' : ''}`}
                 style={{ padding: 28, textAlign: 'center' }}
-                onDragOver={e => { e.preventDefault(); setDrag(true) }}
+                onDragOver={(e) => { e.preventDefault(); setDrag(true) }}
                 onDragLeave={() => setDrag(false)}
-                onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files[0]; if (f?.name.endsWith('.pdf')) setFile(f) }}
+                onDrop={(e) => {
+                  e.preventDefault(); setDrag(false);
+                  const f = e.dataTransfer.files[0];
+                  if (f?.name.endsWith('.pdf')) setFile(f);
+                }}
                 onClick={() => fileRef.current?.click()}
               >
                 {file ? (
@@ -163,12 +143,15 @@ export default function LinkedInPage() {
                   </div>
                 ) : (
                   <div>
-                    <Upload size={24} style={{ color: 'var(--ink-faint)', marginBottom: 8, display: 'block', margin: '0 auto 8px' }} />
+                    <Upload size={24} style={{ color: 'var(--ink-faint)', marginBottom: 8, display: 'block', marginLeft: 'auto', marginRight: 'auto' }} />
                     <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>Drop your PDF here</div>
                     <div style={{ fontSize: 12, color: 'var(--ink-muted)' }}>or click to browse</div>
                   </div>
                 )}
-                <input ref={fileRef} type="file" accept=".pdf" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) setFile(f) }} />
+                <input ref={fileRef} type="file" accept=".pdf" style={{ display: 'none' }} onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setFile(f);
+                }} />
               </div>
             </div>
 
@@ -179,7 +162,7 @@ export default function LinkedInPage() {
               <textarea
                 rows={6}
                 value={jobDesc}
-                onChange={e => setJobDesc(e.target.value)}
+                onChange={(e) => setJobDesc(e.target.value)}
                 placeholder="Paste the full job description here for better optimization..."
                 style={{ lineHeight: 1.6 }}
               />
@@ -204,55 +187,57 @@ export default function LinkedInPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
             <div className="card" style={{ padding: 32 }}>
               <div style={{ marginBottom: 24 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Linkedin size={20} style={{ color: '#0A66C2' }} /> LinkedIn Headline
-                  </h3>
-                  <button className="btn-outline" onClick={() => handleCopy(result.headline, 'headline')} style={{ fontSize: 12, padding: '6px 12px' }}>
+                <h3 style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>
+                  LinkedIn Headline
+                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <p style={{ fontSize: 16, lineHeight: 1.6, margin: 0 }}>{result.headline}</p>
+                  <button className="btn-outline" onClick={() => handleCopy(result.headline, 'headline')} style={{ fontSize: 12, padding: '6px 12px', marginLeft: 8 }}>
                     <Clipboard size={14} /> {copied === 'headline' ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
-                <p style={{ fontSize: 16, lineHeight: 1.6 }}>{result.headline}</p>
               </div>
 
               <div style={{ marginBottom: 24 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <h3 style={{ fontSize: 18, fontWeight: 500 }}>About Section</h3>
+                  <h3 style={{ fontSize: 18, fontWeight: 500, margin: 0 }}>About Section</h3>
                   <button className="btn-outline" onClick={() => handleCopy(result.about, 'about')} style={{ fontSize: 12, padding: '6px 12px' }}>
                     <Clipboard size={14} /> {copied === 'about' ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
-                <pre style={{ 
-                  fontFamily: 'inherit', 
-                  fontSize: 14, 
-                  lineHeight: 1.7, 
-                  whiteSpace: 'pre-wrap', 
-                  background: 'var(--paper)', 
-                  padding: 16, 
-                  borderRadius: 8, 
-                  margin: 0 
+                <pre style={{
+                  fontFamily: 'inherit',
+                  fontSize: 14,
+                  lineHeight: 1.7,
+                  whiteSpace: 'pre-wrap',
+                  background: 'var(--paper)',
+                  padding: 16,
+                  borderRadius: 8,
+                  margin: 0
                 }}>
                   {result.about}
                 </pre>
               </div>
 
-              {result.experience.map((exp, i) => (
+              {result.experience && result.experience.map((exp, i) => (
                 <div key={i} style={{ marginBottom: 24 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <h3 style={{ fontSize: 16, fontWeight: 500 }}>{exp.role} at {exp.company}</h3>
+                    <h3 style={{ fontSize: 16, fontWeight: 500, margin: 0 }}>
+                      {exp.role} at {exp.company}
+                    </h3>
                     <button className="btn-outline" onClick={() => handleCopy(exp.optimized, `exp-${i}`)} style={{ fontSize: 12, padding: '6px 12px' }}>
                       <Clipboard size={14} /> {copied === `exp-${i}` ? 'Copied!' : 'Copy'}
                     </button>
                   </div>
-                  <pre style={{ 
-                    fontFamily: 'inherit', 
-                    fontSize: 14, 
-                    lineHeight: 1.7, 
-                    whiteSpace: 'pre-wrap', 
-                    background: 'var(--paper)', 
-                    padding: 16, 
-                    borderRadius: 8, 
-                    margin: 0 
+                  <pre style={{
+                    fontFamily: 'inherit',
+                    fontSize: 14,
+                    lineHeight: 1.7,
+                    whiteSpace: 'pre-wrap',
+                    background: 'var(--paper)',
+                    padding: 16,
+                    borderRadius: 8,
+                    margin: 0
                   }}>
                     {exp.optimized}
                   </pre>
@@ -270,7 +255,8 @@ export default function LinkedInPage() {
 
               <div style={{ marginBottom: 24 }}>
                 <h3 style={{ fontSize: 18, fontWeight: 500, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <CheckCircle size={18} style={{ color: 'var(--success)' }} /> Pro Tips
+                  <CheckCircle size={18} style={{ color: 'var(--success)' }} />
+                  Pro Tips
                 </h3>
                 <ul style={{ paddingLeft: 20, margin: 0, color: 'var(--ink-muted)' }}>
                   {result.tips.map((tip, i) => (

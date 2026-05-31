@@ -1,0 +1,17 @@
+{
+  "name": "Resumatch",
+  "short_name": "Resumatch",
+  "description": "AI-powered resume tailor for job applications",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d4622a",
+  "icons": [
+    {
+      "src": "/vercel.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
