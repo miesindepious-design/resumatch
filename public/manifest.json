@@ -1,17 +1,18 @@
 {
-  "name": "Resumatch",
+  "name": "Resumatch - AI Resume Tailor",
   "short_name": "Resumatch",
-  "description": "AI-powered resume tailor for job applications",
+  "description": "Tailor your resume to any job description in seconds using AI",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#d4622a",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/vercel.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
