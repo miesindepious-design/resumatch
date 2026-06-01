@@ -37,7 +37,7 @@ export default function UpgradePage() {
 
   async function handleUpgrade() {
     setLoading(true)
-    const res = await fetch('/api/stripe', { method: 'POST' })
+    const res = await fetch('/api/lemonsqueezy', { method: 'POST' })
     const { url } = await res.json()
     if (url) {
       window.location.href = url
@@ -240,7 +240,7 @@ export default function UpgradePage() {
               color: 'var(--ink-muted)',
               marginTop: 12
             }}>
-              Powered by Stripe. Cancel anytime.
+              Powered by LemonSqueezy. Cancel anytime.
             </p>
           </div>
         </div>
