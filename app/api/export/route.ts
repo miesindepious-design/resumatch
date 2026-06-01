@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   // Parse resume into sections
   const sections: { heading?: string; content: string[] }[] = []
-  let currentSection = { content: [] as string[] }
+  let currentSection: { heading?: string; content: string[] } = { content: [] }
 
   lines.forEach((line, idx) => {
     const trimmed = line.trim()
